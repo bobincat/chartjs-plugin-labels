@@ -152,7 +152,6 @@ export class ChartLabel {
     );
     const config: ChartConfiguration = chart?.config as ChartConfiguration;
     if (config.type === 'bar') {
-      this.options.position = LabelPosition.DEFAULT;
       this.options.arc = false;
       this.options.overlap = true;
     }
@@ -493,8 +492,13 @@ export class ChartLabel {
 
   private getBarRenderInfo(element: any, label: any): any {
     const renderInfo = element.tooltipPosition();
-    renderInfo.y -=
-      this.measureLabel(label).height / 2 + this.options.textMargin;
+    const axisPositionCoefficient = this.options.position === LabelPosition.OUTSIDE ? -1 : 1;
+    if (this.chart.config.options?.indexAxis === 'y') {
+      renderInfo.x -= (this.measureLabel(label).width / 2 + this.options.textMargin) * axisPositionCoefficient;
+    }
+    else {
+      renderInfo.y += (this.measureLabel(label).height / 2 + this.options.textMargin) * axisPositionCoefficient;
+    }
     return renderInfo;
   }
 
